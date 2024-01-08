@@ -1,5 +1,4 @@
 class C4AITrainer : C4SmartAI {
-    private Random rand;
     public const int TUNE_MAX = 1000;
     public const int TUNE_MIN = -1000;
     public bool playingAsPlayer;
@@ -24,15 +23,16 @@ class C4AITrainer : C4SmartAI {
         s += "{ borders opponent neighbor: " + tuningValues[3] +  " }\n";
         s += "{ borders more than one opponent neighbor: " + tuningValues[4] +  " }\n";
         s += "{ continues run of two: " + tuningValues[5] +  " }\n";
-        s += "{ continues run of three: " + tuningValues[6] +  " }\n";
-        s += "{ stops run of two: " + tuningValues[7] +  " }\n";
-        s += "{ stops run of three: " + tuningValues[8] +  " }\n";
+        s += "{ continues run of three or more: " + tuningValues[6] +  " }\n";
+        s += "{ stops run of three: " + tuningValues[7] +  " }\n";
+        s += "{ stops run of four or more: " + tuningValues[8] +  " }\n";
         return s;
     }
 
     public SortedDictionary<int, int> TuningValues { get => this.tuningValues; }
 
     public void initGame(){
+        Start();
         if (playingAsPlayer){
             myNumber = 1;
         } else {

@@ -8,13 +8,14 @@ class Connect4 : IPlayable
     protected Random rand;
     private (int x, int y) lastMove;
 
-    public Connect4 (){
+    protected void Start (){
         rand = new Random();
         grid = new int [6,7];
         lastMove = (0, 0);
     }
 
     public virtual void Play() {
+        Start();
         Console.WriteLine(startMessage);
         DisplayGrid();
 

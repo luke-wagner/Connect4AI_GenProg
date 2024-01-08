@@ -1,14 +1,9 @@
 using System.Text.Json;
 
-class AIDueler : IPlayable
-{
-    const int NUM_TRIALS_FOR_NEW_WINNER = 10000;
-    const int NUM_WINNERS_TO_GENERATE = 256;
-    const int NUM_CHILDREN_PER_WINNER = 7;
-    const int NUM_DIVISIONS_PER_REDUCTION = 3;
-    const int NUM_CYCLES = 500;
-
+class AIDueler : IPlayable{
     private Random rand;
+    private double runTime;
+    public double RunTime {get; private set;}
 
     void SlowPlay(ref C4AITrainer AI_1, ref C4AITrainer AI_2){
             while (true){
@@ -69,7 +64,7 @@ class AIDueler : IPlayable
     public SortedDictionary<int, int> findNewWinner(){
         SortedDictionary<int, int>? winnerTuning = null;
 
-        for(int i = 0; i < NUM_TRIALS_FOR_NEW_WINNER; i++){
+        for(int i = 0; i < DuelerConfig.NUM_TRIALS_FOR_NEW_WINNER; i++){
             C4AITrainer winner;
             do {
                 C4AITrainer AI_1;
@@ -98,8 +93,7 @@ class AIDueler : IPlayable
     }
 
     public void addWinnersToPool(){
-        string inputFile = "../../../res/winners.json";
-        // #check
+        string inputFile = "../../../extra/res/randWinners";
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -112,7 +106,7 @@ class AIDueler : IPlayable
             winnersData = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
             // Output json data
             string json = JsonSerializer.Serialize(winnersData, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("../../../res/reducedPool.json", json);
+            File.WriteAllText("../../../extra/res/reducedPool.json", json);
         } else {
             winnersData = new List<SortedDictionary<int, int>>();
             Console.WriteLine("ERROR: No winners to add to pool");
@@ -122,19 +116,18 @@ class AIDueler : IPlayable
     public void generateRandomWinners(){
         // Input stored winners into winners data
         List<SortedDictionary<int, int>> winnersData = new List<SortedDictionary<int, int>>();
-        for (int i = 0; i < NUM_WINNERS_TO_GENERATE; i++){
+        for (int i = 0; i < DuelerConfig.NUM_WINNERS_TO_GENERATE; i++){
             SortedDictionary<int, int> newWinner = findNewWinner();    
             winnersData.Add(newWinner);
         }
 
         // Output json data
         string json = JsonSerializer.Serialize(winnersData, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText("../../../res/winners.json", json);
+        File.WriteAllText("../../../extra/res/randWinners", json);
     }
 
     public void repopulatePool(){
-        string inputFile = "../../../res/reducedPool.json";
-        // #check
+        string inputFile = "../../../extra/res/reducedPool.json";
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -154,7 +147,7 @@ class AIDueler : IPlayable
 
         foreach (var organism in reducedPool){
             newPool.Add(organism);
-            for (int i = 0; i < NUM_CHILDREN_PER_WINNER; i++){
+            for (int i = 0; i < DuelerConfig.NUM_CHILDREN_PER_WINNER; i++){
                 int mateNumber;
                 SortedDictionary<int, int> mate;
                 do {
@@ -179,7 +172,7 @@ class AIDueler : IPlayable
 
         // Output json data
         string json = JsonSerializer.Serialize(newPool, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText("../../../res/pool.json", json);
+        File.WriteAllText("../../../extra/res/pool.json", json);
     }
 
     private bool _dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile){
@@ -230,13 +223,12 @@ class AIDueler : IPlayable
         return true;
     }
 
-    public bool dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile="../../../res/reducedPool.json"){
+    public bool dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile="../../../extra/res/reducedPool.json"){
         return _dividePool(ref pool, outputFile);
     }
 
-    public bool dividePool(string inputFile, string outputFile="../../../res/reducedPool.json"){
+    public bool dividePool(string inputFile, string outputFile="../../../extra/res/reducedPool.json"){
         List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
-        // #check
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -254,8 +246,7 @@ class AIDueler : IPlayable
     }
 
     public bool reducePool(){
-        string inputFile = "../../../res/pool.json";
-        // #check
+        string inputFile = "../../../extra/res/pool.json";
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -265,7 +256,7 @@ class AIDueler : IPlayable
         List<SortedDictionary<int, int>> pool;
         if (jsonString != ""){
             pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
-            if (pool.Count() / Math.Pow(2, NUM_DIVISIONS_PER_REDUCTION) < NUM_WINNERS_TO_GENERATE){
+            if (pool.Count() / Math.Pow(2, DuelerConfig.NUM_DIVISIONS_PER_REDUCTION) < DuelerConfig.NUM_WINNERS_TO_GENERATE){
                 Console.WriteLine("Warning: Reducing pool further will reduce size past original population. Proceed? (Y/N)");
                 string input = Console.ReadLine();
                 if (input != "Y"){
@@ -277,7 +268,7 @@ class AIDueler : IPlayable
             return false;
         }
 
-        for (int i = 0; i < NUM_DIVISIONS_PER_REDUCTION; i++){
+        for (int i = 0; i < DuelerConfig.NUM_DIVISIONS_PER_REDUCTION; i++){
             dividePool(ref pool);
         }
 
@@ -286,12 +277,14 @@ class AIDueler : IPlayable
 
     public void Play()
     {
+        var stopWatch = System.Diagnostics.Stopwatch.StartNew();
         rand = new Random();
 
+        //generateRandomWinners();
         addWinnersToPool();        
 
         // repopulate pool with children of winners some number of times
-        for (int i = 0; i < NUM_CYCLES; i++){
+        for (int i = 0; i < DuelerConfig.NUM_CYCLES; i++){
             var start = DateTime.Now;
             repopulatePool();
             reducePool();
@@ -299,9 +292,12 @@ class AIDueler : IPlayable
             Console.WriteLine("Iteration {0}: {1}", i + 1, end - start);
         }
 
-        string reducedPoolContents = File.ReadAllText("../../../res/reducedPool.json");
-        File.WriteAllText("../../../res/finalTuning.json", reducedPoolContents);
-        while(dividePool(inputFile:"../../../res/finalTuning.json", outputFile:"../../../res/finalTuning.json"));
+        string reducedPoolContents = File.ReadAllText("../../../extra/res/reducedPool.json");
+        File.WriteAllText("../../../extra/res/finalTuning.json", reducedPoolContents);
+        while(dividePool(inputFile:"../../../extra/res/finalTuning.json", outputFile:"../../../extra/res/finalTuning.json"));
+
+        stopWatch.Stop();
+        RunTime = stopWatch.ElapsedMilliseconds / 1000;
     }
 
     public void Quit()
