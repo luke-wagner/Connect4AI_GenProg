@@ -93,7 +93,7 @@ class AIDueler : IPlayable{
     }
 
     public void addWinnersToPool(){
-        string inputFile = "../../../extra/res/randWinners";
+        string inputFile = "../../../res/randWinners.json";
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -106,7 +106,7 @@ class AIDueler : IPlayable{
             winnersData = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
             // Output json data
             string json = JsonSerializer.Serialize(winnersData, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("../../../extra/res/reducedPool.json", json);
+            File.WriteAllText("../../../res/reducedPool.json", json);
         } else {
             winnersData = new List<SortedDictionary<int, int>>();
             Console.WriteLine("ERROR: No winners to add to pool");
@@ -123,11 +123,11 @@ class AIDueler : IPlayable{
 
         // Output json data
         string json = JsonSerializer.Serialize(winnersData, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText("../../../extra/res/randWinners", json);
+        File.WriteAllText("../../../res/randWinners.json", json);
     }
 
     public void repopulatePool(){
-        string inputFile = "../../../extra/res/reducedPool.json";
+        string inputFile = "../../../res/reducedPool.json";
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -172,7 +172,7 @@ class AIDueler : IPlayable{
 
         // Output json data
         string json = JsonSerializer.Serialize(newPool, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText("../../../extra/res/pool.json", json);
+        File.WriteAllText("../../../res/pool.json", json);
     }
 
     private bool _dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile){
@@ -223,11 +223,11 @@ class AIDueler : IPlayable{
         return true;
     }
 
-    public bool dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile="../../../extra/res/reducedPool.json"){
+    public bool dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile="../../../res/reducedPool.json"){
         return _dividePool(ref pool, outputFile);
     }
 
-    public bool dividePool(string inputFile, string outputFile="../../../extra/res/reducedPool.json"){
+    public bool dividePool(string inputFile, string outputFile="../../../res/reducedPool.json"){
         List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
         string jsonString;
         try {
@@ -246,7 +246,7 @@ class AIDueler : IPlayable{
     }
 
     public bool reducePool(){
-        string inputFile = "../../../extra/res/pool.json";
+        string inputFile = "../../../res/pool.json";
         string jsonString;
         try {
             jsonString = File.ReadAllText(inputFile);
@@ -292,9 +292,9 @@ class AIDueler : IPlayable{
             Console.WriteLine("Iteration {0}: {1}", i + 1, end - start);
         }
 
-        string reducedPoolContents = File.ReadAllText("../../../extra/res/reducedPool.json");
-        File.WriteAllText("../../../extra/res/finalTuning.json", reducedPoolContents);
-        while(dividePool(inputFile:"../../../extra/res/finalTuning.json", outputFile:"../../../extra/res/finalTuning.json"));
+        string reducedPoolContents = File.ReadAllText("../../../res/reducedPool.json");
+        File.WriteAllText("../../../res/finalTuning.json", reducedPoolContents);
+        while(dividePool(inputFile:"../../../res/finalTuning.json", outputFile:"../../../res/finalTuning.json"));
 
         stopWatch.Stop();
         RunTime = stopWatch.ElapsedMilliseconds / 1000;
