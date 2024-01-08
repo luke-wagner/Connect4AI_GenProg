@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AIDueler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIIAIAAAAAAAEGAAAAAAAIAAAQDAIAAgAAAAKEACQA=</HashCode>
+      <FileName>src\AIDueler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="C4AITrainer" Collapsed="true">
+    <Position X="0.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAIAAAMAAAAAkAAQAABAAQEEAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>src\AITrainer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="C4SmartAI" Collapsed="true">
+    <Position X="0.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAQAAAAAAAAAAAAgAAwAAAAAAAAEAI=</HashCode>
+      <FileName>src\C4SmartAI.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Connect4" Collapsed="true">
+    <Position X="0.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAACAYAAAgogCAEAAEAAIAACAAFAAAACgAAgAAAAAYA=</HashCode>
+      <FileName>src\Connect4.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Program" Collapsed="true">
+    <Position X="4.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>src\Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="IPlayable" Collapsed="true">
+    <Position X="3" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAQA=</HashCode>
+      <FileName>src\IPlayable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
