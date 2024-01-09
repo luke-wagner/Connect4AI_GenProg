@@ -1,9 +1,18 @@
 # Connect 4 AI with Genetic Programming
 
 ## Description:
+An AI that plays Connect 4 (trained through genetic programming). Details on the AI was trained are below under [Process For Generating finalTuning.json](#process-for-generating-finaltuningjson). There are also instructions on how to [play the AI](#play-the-ai-instructions) and how to [run the AIDueler](#run-the-aidueler-instructions) (to generate custom tuning values).
 
-ADD MORE HERE
-"res" folder stores the output from running AIDueler.Play().
+## Dependencies
+* Must have Microsoft .NET 8.0 installed and added to PATH
+
+## Play the AI: Instructions
+* Clone the repo
+* In the main repo directory, run `dotnet build` then `dotnet run`
+
+## Run the AIDueler: Instructions
+
+### ADD MORE HERE
 
 ## Class Hierarchy Diagram:
 
@@ -18,7 +27,6 @@ ADD MORE HERE
 ### AIDueler class
 * Derives from `IPlayable` interface
 * Its purpose is to make `AITrainer` objects compete and do something with the result (output to appropriate .json file(s))
-* Run `AIDueler` by creating a new `AIDueler` object and calling `AIDueler.Play()`
 * The tuning used by `C4SmartAI` comes from the data in `extra/res/finalTuning.json` (generated from `AIDueler.Play()`)
 
 ### Process for generating `finalTuning.json`:
