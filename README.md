@@ -11,8 +11,22 @@ An AI that plays Connect 4 (trained through genetic programming). Details on the
 * In the main repo directory, run `dotnet build` then `dotnet run`
 
 ## Run the AIDueler: Instructions
+* In `src/Program.cs` modify `Main()` by creating an `AIDueler` object and calling `AIDueler.Play()`
+* Sample code:
+```
+private static void Main(string[] args) {
+    AIDueler dueler = new AIDueler();
+    dueler.Play();
 
-### ADD MORE HERE
+    // uncomment this to play the AI
+    //C4SmartAI game = new C4SmartAI();
+    //game.Play();
+}
+```
+* Modify `src/DuelerConfig.cs` to customize the process for generating `finalTuning.json`
+* Run the program (`dotnet build` then `dotnet run`)
+* The new tuning will be stored in `res/finalTuning.json`
+* To try out the AI with the new tuning, copy and paste the tuning values into `src/AITuning.cs`. Then make sure to create a `C4SmartAI` object in `Main()` and call `C4SmartAI.Play()` and before again running `dotnet build` and `dotnet run`
 
 ## Class Hierarchy Diagram:
 

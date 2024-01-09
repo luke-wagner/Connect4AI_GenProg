@@ -4,20 +4,12 @@ partial class C4SmartAI : Connect4 {
     // Each key represents an attribute that either belongs or does not belong to a possible move (see description
     // of each attribute below)
     // All tuning values are assigned a number between 0 and 1000;
-    // I used genetic programming to tune these values, see "EX_03/extra/README.md" for more on how I accomplished this
-    protected SortedDictionary<int, int> tuningValues = new SortedDictionary<int, int>(){
-        { 1, -198 }, // borders friendly neighbor
-        { 2, -23 }, // borders more than one friendly neighbor
-        { 3, 414 }, // borders opponent neighbor
-        { 4, 393 }, // borders more than one opponent neighbor
-        { 5, 343 }, // continues run of two
-        { 6, 978 }, // continues run of three or more
-        { 7, 373 }, // stops run of three
-        { 8, 972 }, // stops run of four or more
-    };
+    // I used genetic programming to tune these values
+    // Change the default tuning values in AITuning.cs
+    protected SortedDictionary<int, int> tuningValues;
 
     public C4SmartAI(){
-        startMessage = "Hmm.. Doesn't this look familiar. Let's see if you can beat Connect 4 with my new and improved AI! Bwahaha!\n";
+        tuningValues = _tuning; // set to default tuning values
         myNumber = 2;
     }
 
