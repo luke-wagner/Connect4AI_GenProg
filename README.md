@@ -26,7 +26,7 @@ private static void Main(string[] args) {
 * Modify `src/DuelerConfig.cs` to customize the process for generating `finalTuning.json`
 * Run the program (`dotnet build` then `dotnet run`)
 * The new tuning will be stored in `res/finalTuning.json`
-* To try out the AI with the new tuning, copy and paste the tuning values into `src/AITuning.cs`. Then make sure to create a `C4SmartAI` object in `Main()` and call `C4SmartAI.Play()` and before again running `dotnet build` and `dotnet run`
+* To try out the AI with the new tuning, copy and paste the tuning values in `finalTuning.json` into `src/AITuning.cs`. Then make sure to create a `C4SmartAI` object in `Main()` and call `C4SmartAI.Play()` before again running `dotnet build` and `dotnet run`
 
 ## Class Hierarchy Diagram:
 
