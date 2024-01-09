@@ -1,4 +1,4 @@
-# Connect 4 AI with Genetic Programming
+# Connect 4 AI with Genetic Programming 🤖
 
 ## Description:
 An AI that plays Connect 4 (trained through genetic programming). Details on the AI was trained are below under [Process For Generating finalTuning.json](#process-for-generating-finaltuningjson). There are also instructions on how to [play the AI](#play-the-ai-instructions) and how to [run the AIDueler](#run-the-aidueler-instructions) (to generate custom tuning values).
