@@ -5,67 +5,59 @@ class AIDueler : IPlayable{
     private double runTime;
     public double RunTime {get; private set;}
 
-    void SlowPlay(ref C4AITrainer AI_1, ref C4AITrainer AI_2){
-            while (true){
-                int AI_1_move = AI_1.Move();
-                AI_2.OpponentMove(AI_1_move);
-                AI_1.DisplayGrid(false, true, true);
-                if (AI_1.won){
-                    Console.WriteLine("AI 1 won!");
-                    return;
-                }
-                Thread.Sleep(800);
+    public AIDueler() {
+        rand = new Random();
+    }
 
-                if (AI_1.boardFull){
-                    Console.WriteLine("Draw!");
-                    return;
-                }
+    static public C4AITrainer? PlayMatch(ref C4AITrainer AI_1, ref C4AITrainer AI_2, bool slowPlay=false){
+        void DisplayAndWait(ref C4AITrainer AI_1, ref C4AITrainer AI_2){
+            AI_1.DisplayGrid(false, true, true);
 
-                int AI_2_move = AI_2.Move();
-                AI_1.OpponentMove(AI_2_move);
-                AI_2.DisplayGrid(false, true, true);
-                if (AI_2.won){
-                    Console.WriteLine("AI 2 won!");
-                    return;
-                }
-                Thread.Sleep(800);
-
-                if (AI_1.boardFull){
-                    Console.WriteLine("Draw!");
-                    return;
-                }
+            if (AI_1.won){
+                Console.WriteLine("AI 1 won!");
+            } else if (AI_2.won){
+                Console.WriteLine("AI 2 won!");
+            } else if (AI_1.boardFull || AI_2.boardFull){
+                Console.WriteLine("Draw!");
+            } else {
             }
+
+            Thread.Sleep(800);
         }
 
-    C4AITrainer? FastPlay(C4AITrainer AI_1, C4AITrainer AI_2){
-            while (true){
-                int AI_1_move = AI_1.Move();
-                AI_2.OpponentMove(AI_1_move);
-                if (AI_1.won){
-                    return AI_1;
-                }
-
-                if (AI_1.boardFull){
-                    return null;
-                }
-
-                int AI_2_move = AI_2.Move();
-                AI_1.OpponentMove(AI_2_move);
-                if (AI_2.won){
-                    return AI_2;
-                }
-
-                if (AI_1.boardFull){
-                    return null;
-                }
+        while (true){
+            int AI_1_move = AI_1.Move();
+            AI_2.OpponentMove(AI_1_move);
+            if (slowPlay){
+                DisplayAndWait(ref AI_1, ref AI_2);
             }
+            
+            if (AI_1.won){
+                return AI_1;
+            } else if (AI_1.boardFull){
+                return null;
+            }
+        
+            int AI_2_move = AI_2.Move();
+            AI_1.OpponentMove(AI_2_move);
+
+            if (slowPlay){
+                DisplayAndWait(ref AI_1, ref AI_2);
+            }
+
+            if (AI_2.won){
+                return AI_2;
+            } else if (AI_2.boardFull){
+                return null;
+            }
+        }          
     }
     
     public SortedDictionary<int, int> findNewWinner(){
         SortedDictionary<int, int>? winnerTuning = null;
 
         for(int i = 0; i < DuelerConfig.NUM_TRIALS_FOR_NEW_WINNER; i++){
-            C4AITrainer winner;
+            C4AITrainer? winner;
             do {
                 C4AITrainer AI_1;
                 if (winnerTuning == null){
@@ -83,7 +75,7 @@ class AIDueler : IPlayable{
                 AI_2.initGame();
                 AI_2.randomlyTune();
 
-                winner = FastPlay(AI_1, AI_2);
+                winner = PlayMatch(ref AI_1, ref AI_2, slowPlay:true);
             } while (winner == null);
 
             winnerTuning = winner.TuningValues;
@@ -204,7 +196,7 @@ class AIDueler : IPlayable{
             AI_1.initGame();
             AI_2.initGame();
 
-            C4AITrainer? winner = FastPlay(AI_1, AI_2);
+            C4AITrainer? winner = PlayMatch(ref AI_1, ref AI_2, slowPlay:true);
             if (winner == null){
                 winner = AI_1;
             }
@@ -278,7 +270,6 @@ class AIDueler : IPlayable{
     public void Play()
     {
         var stopWatch = System.Diagnostics.Stopwatch.StartNew();
-        rand = new Random();
 
         //generateRandomWinners();
         addWinnersToPool();        
