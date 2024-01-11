@@ -1,16 +1,30 @@
 class C4AITrainer : C4SmartAI {
     public const int TUNE_MAX = 1000;
     public const int TUNE_MIN = -1000;
-    public bool playingAsPlayer;
+    public bool playingAsPlayer { get; private set;}
 
     public bool won { get => this.checkForWin(myNumber); }
     public bool boardFull { get => this.checkFull(); }
 
-    public C4AITrainer(){
+    public SortedDictionary<int, int> TuningValues { get => this.tuningValues; }
 
+    public C4AITrainer(bool playAsPlayer){
+        playingAsPlayer = playAsPlayer;
+        if (playingAsPlayer){
+            myNumber = 1;
+        } else {
+            myNumber = 2;
+        }
     }
 
-    public C4AITrainer(SortedDictionary<int, int> tuning){
+    public C4AITrainer(bool playAsPlayer, SortedDictionary<int, int> tuning){
+        playingAsPlayer = playAsPlayer;
+        if (playingAsPlayer){
+            myNumber = 1;
+        } else {
+            myNumber = 2;
+        }
+
         tuningValues = tuning;
     }
 
@@ -29,14 +43,19 @@ class C4AITrainer : C4SmartAI {
         return s;
     }
 
-    public SortedDictionary<int, int> TuningValues { get => this.tuningValues; }
-
-    public void initGame(){
-        Start();
-        if (playingAsPlayer){
-            myNumber = 1;
+    public override void Play()
+    {
+        Console.WriteLine("//////////////////////////////////////////////////////////////");
+        Console.WriteLine("//// WARNING: PLAYING AITRAINER, NOT INSTANCE OF C4SMARTAI");
+        Console.WriteLine("//// - MAY NOT BEHAVE AS EXPECTED.");
+        Console.WriteLine("//////////////////////////////////////////////////////////////");
+        Console.WriteLine("\n-- PROCEED? (Y/N)");
+        string input = Console.ReadLine();
+        Console.WriteLine();
+        if (input == "Y"){
+            base.Play();
         } else {
-            myNumber = 2;
+            return;
         }
     }
 

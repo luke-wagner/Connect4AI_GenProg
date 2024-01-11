@@ -9,7 +9,7 @@ class AIDueler : IPlayable{
         rand = new Random();
     }
 
-    static public C4AITrainer? PlayMatch(ref C4AITrainer AI_1, ref C4AITrainer AI_2, bool slowPlay=false){
+    public static C4AITrainer? PlayMatch(ref C4AITrainer AI_1, ref C4AITrainer AI_2, bool slowPlay=false){
         void DisplayAndWait(ref C4AITrainer AI_1, ref C4AITrainer AI_2){
             AI_1.DisplayGrid(false, true, true);
 
@@ -61,18 +61,12 @@ class AIDueler : IPlayable{
             do {
                 C4AITrainer AI_1;
                 if (winnerTuning == null){
-                    AI_1 = new C4AITrainer();
-                    AI_1.playingAsPlayer = true;
-                    AI_1.initGame();
+                    AI_1 = new C4AITrainer(true);
                     AI_1.randomlyTune();
                 } else {
-                    AI_1 = new C4AITrainer(winnerTuning);
-                    AI_1.playingAsPlayer = true;
-                    AI_1.initGame();
+                    AI_1 = new C4AITrainer(true, winnerTuning);
                 }
-                C4AITrainer AI_2 = new C4AITrainer();
-                AI_2.playingAsPlayer = false;
-                AI_2.initGame();
+                C4AITrainer AI_2 = new C4AITrainer(false);
                 AI_2.randomlyTune();
 
                 winner = PlayMatch(ref AI_1, ref AI_2, slowPlay:true);
@@ -189,12 +183,8 @@ class AIDueler : IPlayable{
                 opponentNumber = pool.IndexOf(opponent);
             } while(opponent == organism);
 
-            C4AITrainer AI_1 = new C4AITrainer(organism);
-            C4AITrainer AI_2 = new C4AITrainer(opponent);
-            AI_1.playingAsPlayer = true;
-            AI_2.playingAsPlayer = false;
-            AI_1.initGame();
-            AI_2.initGame();
+            C4AITrainer AI_1 = new C4AITrainer(true, organism);
+            C4AITrainer AI_2 = new C4AITrainer(false, opponent);
 
             C4AITrainer? winner = PlayMatch(ref AI_1, ref AI_2, slowPlay:true);
             if (winner == null){
