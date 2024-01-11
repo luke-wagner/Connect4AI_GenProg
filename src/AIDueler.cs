@@ -77,9 +77,9 @@ class AIDueler : IPlayable{
         // get data in randWinners.json
         string jsonString = readJson("../../../res/randWinners.json");
 
-        List<SortedDictionary<int, int>> winnersData;
+        List<SortedDictionary<int, int>> winnersData = new List<SortedDictionary<int, int>>();
         if (jsonString != ""){
-            winnersData = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
+            tryDeserialize(jsonString, ref winnersData);
 
             // Write winersData to reducedPool.json
             if (!writeJson(winnersData, "../../../res/reducedPool.json")){
@@ -108,9 +108,9 @@ class AIDueler : IPlayable{
         // get json data from reducedPool.json
         string jsonString = readJson("../../../res/reducedPool.json");
 
-        List<SortedDictionary<int, int>> reducedPool;
+        List<SortedDictionary<int, int>> reducedPool = new List<SortedDictionary<int, int>>();
         if (jsonString != ""){
-            reducedPool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
+            tryDeserialize(jsonString, ref reducedPool);
         } else {
             Console.WriteLine("ERROR: Nothing in pool to repopulate");
             return;
@@ -152,7 +152,7 @@ class AIDueler : IPlayable{
         string jsonString = readJson(inputFile);
         
         if (jsonString != ""){
-            pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
+            tryDeserialize(jsonString, ref pool);
         } else {
             Console.WriteLine("ERROR: No organisms found in pool");
             return false;
@@ -164,10 +164,10 @@ class AIDueler : IPlayable{
     public static bool ReducePool(){
         string jsonString = readJson("../../../res/pool.json");
 
-        List<SortedDictionary<int, int>> pool;
+        List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
 
         if (jsonString != ""){
-            pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
+            tryDeserialize(jsonString, ref pool);
             if (pool.Count() / Math.Pow(2, DuelerConfig.NUM_DIVISIONS_PER_REDUCTION) < DuelerConfig.NUM_WINNERS_TO_GENERATE){
                 Console.WriteLine("Warning: Reducing pool further will reduce size past original population. Proceed? (Y/N)");
                 string input = Console.ReadLine();
@@ -238,6 +238,18 @@ class AIDueler : IPlayable{
         }
 
         return jsonString;
+    }
+
+    private static bool tryDeserialize<T>(string inputString, ref T output){
+        try {
+            output = JsonSerializer.Deserialize<T>(inputString);
+            if (output != null){
+                return true;
+            }
+        } catch {}
+
+        Console.WriteLine("\nERROR: Could not deserialize string into object {0}\n", typeof(T));
+        return false;
     }
 
     private static bool writeJson(Object data, string outFileName){
