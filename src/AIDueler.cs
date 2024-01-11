@@ -1,13 +1,8 @@
 using System.Text.Json;
 
 class AIDueler : IPlayable{
-    private Random rand;
-    private double runTime;
+    private static Random rand = new Random();
     public double RunTime {get; private set;}
-
-    public AIDueler() {
-        rand = new Random();
-    }
 
     public static C4AITrainer? PlayMatch(ref C4AITrainer AI_1, ref C4AITrainer AI_2, bool slowPlay=false){
         void DisplayAndWait(ref C4AITrainer AI_1, ref C4AITrainer AI_2){
@@ -53,7 +48,7 @@ class AIDueler : IPlayable{
         }          
     }
     
-    public SortedDictionary<int, int> findNewWinner(){
+    public static SortedDictionary<int, int> FindNewWinner(){
         SortedDictionary<int, int>? winnerTuning = null;
 
         for(int i = 0; i < DuelerConfig.NUM_TRIALS_FOR_NEW_WINNER; i++){
@@ -78,48 +73,40 @@ class AIDueler : IPlayable{
         return winnerTuning;
     }
 
-    public void addWinnersToPool(){
-        string inputFile = "../../../res/randWinners.json";
-        string jsonString;
-        try {
-            jsonString = File.ReadAllText(inputFile);
-        } catch {
-            jsonString = "";
-        }
+    public static void AddWinnersToPool(){
+        // get data in randWinners.json
+        string jsonString = readJson("../../../res/randWinners.json");
 
         List<SortedDictionary<int, int>> winnersData;
         if (jsonString != ""){
             winnersData = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
-            // Output json data
-            string json = JsonSerializer.Serialize(winnersData, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("../../../res/reducedPool.json", json);
+
+            // Write winersData to reducedPool.json
+            if (!writeJson(winnersData, "../../../res/reducedPool.json")){
+                // writing failed
+                Console.WriteLine("\nERROR: Writing to json failed\n");
+                return;
+            }
         } else {
-            winnersData = new List<SortedDictionary<int, int>>();
             Console.WriteLine("ERROR: No winners to add to pool");
         }
     }
 
-    public void generateRandomWinners(){
+    public static void GenerateRandomWinners(){
         // Input stored winners into winners data
         List<SortedDictionary<int, int>> winnersData = new List<SortedDictionary<int, int>>();
         for (int i = 0; i < DuelerConfig.NUM_WINNERS_TO_GENERATE; i++){
-            SortedDictionary<int, int> newWinner = findNewWinner();    
+            SortedDictionary<int, int> newWinner = FindNewWinner();    
             winnersData.Add(newWinner);
         }
 
-        // Output json data
-        string json = JsonSerializer.Serialize(winnersData, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText("../../../res/randWinners.json", json);
+        // Write winnersData to randWinners.json
+        writeJson(winnersData, "../../../res/randWinners.json");
     }
 
-    public void repopulatePool(){
-        string inputFile = "../../../res/reducedPool.json";
-        string jsonString;
-        try {
-            jsonString = File.ReadAllText(inputFile);
-        } catch {
-            jsonString = "";
-        }
+    public static void RepopulatePool(){
+        // get json data from reducedPool.json
+        string jsonString = readJson("../../../res/reducedPool.json");
 
         List<SortedDictionary<int, int>> reducedPool;
         if (jsonString != ""){
@@ -156,19 +143,57 @@ class AIDueler : IPlayable{
             }
         }
 
-        // Output json data
-        string json = JsonSerializer.Serialize(newPool, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText("../../../res/pool.json", json);
+        // Output newPool data to pool.json
+        writeJson(newPool, "../../../res/pool.json");
     }
 
-    private bool _dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile){
+    public static bool DividePool(string inputFile, string outputFile){
+        List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
+        string jsonString = readJson(inputFile);
+        
+        if (jsonString != ""){
+            pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
+        } else {
+            Console.WriteLine("ERROR: No organisms found in pool");
+            return false;
+        }
+
+        return dividePool(ref pool, outputFile);
+    }
+
+    public static bool ReducePool(){
+        string jsonString = readJson("../../../res/pool.json");
+
+        List<SortedDictionary<int, int>> pool;
+
+        if (jsonString != ""){
+            pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
+            if (pool.Count() / Math.Pow(2, DuelerConfig.NUM_DIVISIONS_PER_REDUCTION) < DuelerConfig.NUM_WINNERS_TO_GENERATE){
+                Console.WriteLine("Warning: Reducing pool further will reduce size past original population. Proceed? (Y/N)");
+                string input = Console.ReadLine();
+                if (input != "Y"){
+                    return false;
+                }
+            }
+        } else {
+            Console.WriteLine("ERROR: No organisms found in pool");
+            return false;
+        }
+
+        for (int i = 0; i < DuelerConfig.NUM_DIVISIONS_PER_REDUCTION; i++){
+            dividePool(ref pool);
+        }
+
+        return true;
+    }
+
+    private static bool dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile="../../../res/reducedPool.json"){
         if (pool.Count() < 2){
             Console.WriteLine("ERROR: Cannot reduce pool further");
             return false;
         }
 
         List<SortedDictionary<int, int>> newPool = new List<SortedDictionary<int, int>>();
-        List<SortedDictionary<int, int>> alreadyFought = new List<SortedDictionary<int, int>>();
         List<SortedDictionary<int, int>> leftInPool = new List<SortedDictionary<int, int>>(pool);
         foreach (var organism in pool){
             if (!leftInPool.Contains(organism)){
@@ -197,85 +222,65 @@ class AIDueler : IPlayable{
         }
 
         // Output json data
-        string json = JsonSerializer.Serialize(newPool, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(outputFile, json);
+        writeJson(newPool, outputFile);
 
         pool = newPool;
-
         return true;
     }
 
-    public bool dividePool(ref List<SortedDictionary<int, int>>? pool, string outputFile="../../../res/reducedPool.json"){
-        return _dividePool(ref pool, outputFile);
-    }
-
-    public bool dividePool(string inputFile, string outputFile="../../../res/reducedPool.json"){
-        List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
+    private static string readJson(string fileName){;
         string jsonString;
         try {
-            jsonString = File.ReadAllText(inputFile);
+            jsonString = File.ReadAllText(fileName);
         } catch {
+            Console.WriteLine("\nERROR: Could not read Json data from file\n");
             jsonString = "";
         }
-        if (jsonString != ""){
-            pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
-        } else {
-            Console.WriteLine("ERROR: No organisms found in pool");
-            return false;
-        }
 
-        return _dividePool(ref pool, outputFile);   
+        return jsonString;
     }
 
-    public bool reducePool(){
-        string inputFile = "../../../res/pool.json";
-        string jsonString;
+    private static bool writeJson(Object data, string outFileName){
+        string json;
         try {
-            jsonString = File.ReadAllText(inputFile);
+            json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(outFileName, json);
+            return true;
         } catch {
-            jsonString = "";
-        }
-        List<SortedDictionary<int, int>> pool;
-        if (jsonString != ""){
-            pool = JsonSerializer.Deserialize<List<SortedDictionary<int, int>>>(jsonString);
-            if (pool.Count() / Math.Pow(2, DuelerConfig.NUM_DIVISIONS_PER_REDUCTION) < DuelerConfig.NUM_WINNERS_TO_GENERATE){
-                Console.WriteLine("Warning: Reducing pool further will reduce size past original population. Proceed? (Y/N)");
-                string input = Console.ReadLine();
-                if (input != "Y"){
-                    return false;
-                }
-            }
-        } else {
-            Console.WriteLine("ERROR: No organisms found in pool");
+            Console.WriteLine("\nERROR: Could not write Json data to file\n");
             return false;
         }
+    }
 
-        for (int i = 0; i < DuelerConfig.NUM_DIVISIONS_PER_REDUCTION; i++){
-            dividePool(ref pool);
+    private static bool writeJson(string jsonData, string outFileName){
+        try {
+            File.WriteAllText(outFileName, jsonData);
+            return true;
+        } catch {
+            Console.WriteLine("\nERROR: Could not write Json data to file\n");
+            return false;
         }
-
-        return true;
     }
 
     public void Play()
     {
         var stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
-        //generateRandomWinners();
-        addWinnersToPool();        
+        //GenerateRandomWinners();
+        AddWinnersToPool();        
 
         // repopulate pool with children of winners some number of times
         for (int i = 0; i < DuelerConfig.NUM_CYCLES; i++){
             var start = DateTime.Now;
-            repopulatePool();
-            reducePool();
+            RepopulatePool();
+            ReducePool();
             var end = DateTime.Now;
             Console.WriteLine("Iteration {0}: {1}", i + 1, end - start);
         }
 
         string reducedPoolContents = File.ReadAllText("../../../res/reducedPool.json");
         File.WriteAllText("../../../res/finalTuning.json", reducedPoolContents);
-        while(dividePool(inputFile:"../../../res/finalTuning.json", outputFile:"../../../res/finalTuning.json"));
+        while(DividePool(inputFile:"../../../res/finalTuning.json", outputFile:"../../../res/finalTuning.json"));
 
         stopWatch.Stop();
         RunTime = stopWatch.ElapsedMilliseconds / 1000;
