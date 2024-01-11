@@ -27,7 +27,7 @@ private static void Main(string[] args) {
 * Modify `src/DuelerConfig.cs` to customize the process for generating `finalTuning.json`
 * Run the program (`dotnet build` then `dotnet run`)
 * The new tuning will be stored in `res/finalTuning.json`
-* To try out the AI with the new tuning, copy and paste the tuning values in `finalTuning.json` into `src/AITuning.cs`. Then make sure to create a `C4SmartAI` object and call `C4SmartAI.Play()` in `Main()`. Alternatively, using the code above, uncomment the second code black and comment out `dueler.Play()`. 
+* To try out the AI with the new tuning, copy and paste the tuning values in `finalTuning.json` into `src/C4AITuning.cs`. Then make sure to create a `C4SmartAI` object and call `C4SmartAI.Play()` in `Main()`. Alternatively, using the code above, uncomment the second code black and comment out `dueler.Play()`. 
 Once these conditions are satisfied, again run `dotnet build` and `dotnet run`
 
 ## Class Hierarchy Diagram:
@@ -42,7 +42,7 @@ Once these conditions are satisfied, again run `dotnet build` and `dotnet run`
 
 ### AIDueler class
 * Derives from `IPlayable` interface
-* Its purpose is to make `AITrainer` objects compete and do something with the result (output to appropriate .json file(s))
+* Its purpose is to make `C4AITrainer` objects compete and do something with the result (output to appropriate .json file(s))
 * The tuning used by `C4SmartAI` comes from the data in `extra/res/finalTuning.json` (generated from `AIDueler.Play()`)
 
 ### Process for generating `finalTuning.json`:
@@ -55,6 +55,6 @@ Once these conditions are satisfied, again run `dotnet build` and `dotnet run`
 #### Critiques:
 * I might have gotten a better tuning if I added the possibility for mutation in `AIDueler.repopulatePool()`. Currently, the gene pool homogenizes fairly quickly so running more cycles is useless
 
-### AITrainer class
+### C4AITrainer class
 * Derives from `C4SmartAI` class
-* Has public methods `Move()` and `OpponentMove()` which can be used by `AIDueler` to put two `AITrainer` objects against each other
+* Has public methods `Move()` and `OpponentMove()` which can be used by `AIDueler` to put two `C4AITrainer` objects against each other
