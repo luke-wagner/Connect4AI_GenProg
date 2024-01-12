@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CustomExceptions;
 
 class AIDueler : IPlayable{
     private static Random rand = new Random();
@@ -233,8 +234,7 @@ class AIDueler : IPlayable{
         try {
             jsonString = File.ReadAllText(fileName);
         } catch {
-            Console.WriteLine("\nERROR: Could not read Json data from file\n");
-            jsonString = "";
+            throw new JsonReadException($"Could not read Json data from file '{fileName}'");
         }
 
         return jsonString;
@@ -246,20 +246,24 @@ class AIDueler : IPlayable{
             if (output != null){
                 return true;
             }
-        } catch {}
+        } catch {
+            throw new DeserializationException($"Could not deserialize string into object of type '{typeof(T)}'");
+        }
 
-        Console.WriteLine("\nERROR: Could not deserialize string into object {0}\n", typeof(T));
         return false;
     }
 
-    private static bool writeJson(Object data, string outFileName){
+    private static bool writeJson<T>(T data, string outFileName){
         string json;
         try {
             json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(outFileName, json);
-            return true;
         } catch {
-            Console.WriteLine("\nERROR: Could not write Json data to file\n");
+            throw new SerializationException($"Could not serialize object of type '{typeof(T)}'");
+        }
+
+        if (writeJson(json, outFileName)){
+            return true;
+        } else {
             return false;
         }
     }
@@ -269,8 +273,7 @@ class AIDueler : IPlayable{
             File.WriteAllText(outFileName, jsonData);
             return true;
         } catch {
-            Console.WriteLine("\nERROR: Could not write Json data to file\n");
-            return false;
+            throw new JsonWriteException($"Could not write Json data to file '{outFileName}'");
         }
     }
 
