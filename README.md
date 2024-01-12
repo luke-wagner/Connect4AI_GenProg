@@ -1,7 +1,7 @@
 # Connect 4 AI with Genetic Programming 🤖
 
 ## Description:
-An AI that plays Connect 4 (trained through genetic programming). Details on the AI was trained are below under [Process For Generating finalTuning.json](#process-for-generating-finaltuningjson). There are also instructions on how to [play the AI](#play-the-ai-instructions) and how to [run the AIDueler](#run-the-aidueler-instructions) (to generate custom tuning values).
+An AI that plays Connect 4, trained through genetic programming. This project came from a simple desire to  play with genetic programming. The end result is by no means perfect. In fact, it is quite easy to trick the AI given that it does not have the ability to look multiple moves ahead. Regardless, if you would like to read the details on the AI was trained, see ["Process for generating finalTuning.json"](#process-for-generating-finaltuningjson) down below. There are also instructions on how to [play the AI](#play-the-ai-instructions) and how to [run the AIDueler](#run-the-aidueler-instructions) (to generate custom tuning values).
 
 ## Dependencies
 * Must have Microsoft .NET 8.0 installed and added to PATH
