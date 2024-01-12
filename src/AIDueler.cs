@@ -1,5 +1,4 @@
-using System.Text.Json;
-using CustomExceptions;
+using JsonFunctsNS;
 
 class AIDueler : IPlayable{
     private static Random rand = new Random();
@@ -76,14 +75,14 @@ class AIDueler : IPlayable{
 
     public static void AddWinnersToPool(){
         // get data in randWinners.json
-        string jsonString = readJson("../../../res/randWinners.json");
+        string jsonString = JsonFuncts.readJson("../../../res/randWinners.json");
 
         List<SortedDictionary<int, int>> winnersData = new List<SortedDictionary<int, int>>();
         if (jsonString != ""){
-            tryDeserialize(jsonString, ref winnersData);
+            JsonFuncts.tryDeserialize(jsonString, ref winnersData);
 
             // Write winersData to reducedPool.json
-            if (!writeJson(winnersData, "../../../res/reducedPool.json")){
+            if (!JsonFuncts.writeJson(winnersData, "../../../res/reducedPool.json")){
                 // writing failed
                 Console.WriteLine("\nERROR: Writing to json failed\n");
                 return;
@@ -102,16 +101,16 @@ class AIDueler : IPlayable{
         }
 
         // Write winnersData to randWinners.json
-        writeJson(winnersData, "../../../res/randWinners.json");
+        JsonFuncts.writeJson(winnersData, "../../../res/randWinners.json");
     }
 
     public static void RepopulatePool(){
         // get json data from reducedPool.json
-        string jsonString = readJson("../../../res/reducedPool.json");
+        string jsonString = JsonFuncts.readJson("../../../res/reducedPool.json");
 
         List<SortedDictionary<int, int>> reducedPool = new List<SortedDictionary<int, int>>();
         if (jsonString != ""){
-            tryDeserialize(jsonString, ref reducedPool);
+            JsonFuncts.tryDeserialize(jsonString, ref reducedPool);
         } else {
             Console.WriteLine("ERROR: Nothing in pool to repopulate");
             return;
@@ -145,15 +144,15 @@ class AIDueler : IPlayable{
         }
 
         // Output newPool data to pool.json
-        writeJson(newPool, "../../../res/pool.json");
+        JsonFuncts.writeJson(newPool, "../../../res/pool.json");
     }
 
     public static bool DividePool(string inputFile, string outputFile){
         List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
-        string jsonString = readJson(inputFile);
+        string jsonString = JsonFuncts.readJson(inputFile);
         
         if (jsonString != ""){
-            tryDeserialize(jsonString, ref pool);
+            JsonFuncts.tryDeserialize(jsonString, ref pool);
         } else {
             Console.WriteLine("ERROR: No organisms found in pool");
             return false;
@@ -163,12 +162,12 @@ class AIDueler : IPlayable{
     }
 
     public static bool ReducePool(){
-        string jsonString = readJson("../../../res/pool.json");
+        string jsonString = JsonFuncts.readJson("../../../res/pool.json");
 
         List<SortedDictionary<int, int>> pool = new List<SortedDictionary<int, int>>();
 
         if (jsonString != ""){
-            tryDeserialize(jsonString, ref pool);
+            JsonFuncts.tryDeserialize(jsonString, ref pool);
             if (pool.Count() / Math.Pow(2, DuelerConfig.NUM_DIVISIONS_PER_REDUCTION) < DuelerConfig.NUM_WINNERS_TO_GENERATE){
                 Console.WriteLine("Warning: Reducing pool further will reduce size past original population. Proceed? (Y/N)");
                 string input = Console.ReadLine();
@@ -223,58 +222,10 @@ class AIDueler : IPlayable{
         }
 
         // Output json data
-        writeJson(newPool, outputFile);
+        JsonFuncts.writeJson(newPool, outputFile);
 
         pool = newPool;
         return true;
-    }
-
-    private static string readJson(string fileName){;
-        string jsonString;
-        try {
-            jsonString = File.ReadAllText(fileName);
-        } catch {
-            throw new JsonReadException($"Could not read Json data from file '{fileName}'");
-        }
-
-        return jsonString;
-    }
-
-    private static bool tryDeserialize<T>(string inputString, ref T output){
-        try {
-            output = JsonSerializer.Deserialize<T>(inputString);
-            if (output != null){
-                return true;
-            }
-        } catch {
-            throw new DeserializationException($"Could not deserialize string into object of type '{typeof(T)}'");
-        }
-
-        return false;
-    }
-
-    private static bool writeJson<T>(T data, string outFileName){
-        string json;
-        try {
-            json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-        } catch {
-            throw new SerializationException($"Could not serialize object of type '{typeof(T)}'");
-        }
-
-        if (writeJson(json, outFileName)){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static bool writeJson(string jsonData, string outFileName){
-        try {
-            File.WriteAllText(outFileName, jsonData);
-            return true;
-        } catch {
-            throw new JsonWriteException($"Could not write Json data to file '{outFileName}'");
-        }
     }
 
     public void Play()
