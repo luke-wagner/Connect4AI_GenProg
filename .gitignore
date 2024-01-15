@@ -1,3 +1,7 @@
+.vs
 .vscode
+*.csproj.user
 bin
 obj
+*/bin
+*/obj
