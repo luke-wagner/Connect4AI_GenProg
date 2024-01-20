@@ -1,4 +1,4 @@
-class Connect4 : IPlayable
+public class Connect4 : IPlayable
 {
     protected const int NUM_ROWS = 6;
     protected const int NUM_COLS = 7;
@@ -6,7 +6,7 @@ class Connect4 : IPlayable
     protected string startMessage = "Welcome to Connect 4!\n";
     protected int [,] grid = new int[6, 7]; // 0 = unmarked, 1 = blue, 2 = red
     protected Random rand = new Random();
-    private (int x, int y) lastMove = (0, 0);
+    protected (int x, int y) lastMove = (0, 0);
 
     public virtual void Play() {
         Console.WriteLine(startMessage);

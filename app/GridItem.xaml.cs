@@ -31,7 +31,15 @@ namespace C4_WPFApp
             set
             {
                 _fillColor = value;
-                this.Ellipse.Fill = new SolidColorBrush(value);
+                if (value == Colors.Blue)
+                {
+                    Ellipse1.Fill = new SolidColorBrush(Colors.Blue);
+                    Ellipse2.Fill = new SolidColorBrush(Colors.DodgerBlue);
+                } else if (value == Colors.Red)
+                {
+                    Ellipse1.Fill = new SolidColorBrush(Colors.DarkRed);
+                    Ellipse2.Fill = new SolidColorBrush(Colors.Red);
+                }
             }
         }
 
@@ -40,6 +48,18 @@ namespace C4_WPFApp
             InitializeComponent();
             SetValue(Grid.RowProperty, x);
             SetValue(Grid.ColumnProperty, y);
+        }
+
+        public async void SlideIn()
+        {
+            // initValue = numIncrements * increment
+
+            Canvas.SetBottom(token, 200);
+            for (int i = 0; i < 40; i++)
+            {
+                await Task.Delay(10);
+                Canvas.SetBottom(token, Canvas.GetBottom(token) - 5);
+            }
         }
     }
 }

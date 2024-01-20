@@ -1,4 +1,4 @@
-partial class C4SmartAI : Connect4 {
+public partial class C4SmartAI : Connect4 {
     protected int myNumber; // the number that represents this computer's token on the grid (1 or 2)
 
     // Each key represents an attribute that either belongs or does not belong to a possible move (see description

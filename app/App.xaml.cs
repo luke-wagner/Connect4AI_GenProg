@@ -9,5 +9,9 @@ namespace C4_WPFApp;
 /// </summary>
 public partial class App : Application
 {
+    private void On_Startup(object sender, StartupEventArgs e)
+    {
+        Application.Current.Properties["CanPlay"] = true;
+    }
 }
 

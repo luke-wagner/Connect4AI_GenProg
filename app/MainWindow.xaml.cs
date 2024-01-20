@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,11 +19,58 @@ namespace C4_WPFApp
     {
         public const int NUM_ROWS = 6;
         public const int NUM_COLS = 7;
+        C4GUI game = new C4GUI(false);
+
+        private bool placeToken(int colNumber, bool isPlayerToken)
+        {
+            if (isPlayerToken)
+            { 
+                (int x, int y) = game.LastMoveCoords;
+                grid[x, y].fillColor = Colors.Blue;
+                grid[x, y].SlideIn();
+            } else
+            {
+                (int x, int y) = game.LastMoveCoords;
+                grid[x, y].fillColor = Colors.Red;
+                grid[x, y].SlideIn();
+            }
+            return true;
+        }
+
+        private bool playerMove (object sender)
+        {
+            (int x, int y) priorLastMove = game.LastMove;
+            int colNumber = ((TriangleButton)sender).myCol;
+            game.OpponentMove(colNumber);
+            if (game.LastMove != priorLastMove)
+            {
+                placeToken(colNumber, true);
+                Application.Current.Properties["CanPlay"] = false;
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        private async Task computerMove()
+        {
+            await Task.Delay(1000);
+            int computerMove = game.Move();
+            placeToken(computerMove, false);
+            Application.Current.Properties["CanPlay"] = true;
+        }
 
         public void OnTriangleClicked(object sender)
         {
-            int colNumber = ((TriangleButton)sender).myCol;
-            grid[0, colNumber].fillColor = Colors.Blue;
+            if ((bool)Application.Current.Properties["CanPlay"] == false)
+            {
+                return;
+            }
+            if (playerMove(sender))
+            {
+                computerMove();
+            }
         }
 
         public MainWindow()

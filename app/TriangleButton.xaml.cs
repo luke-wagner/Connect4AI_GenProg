@@ -37,10 +37,35 @@ namespace C4_WPFApp
             InitializeComponent();
         }
 
+        private async void ClickAnimation()
+        {
+            /*
+            PointCollection myPoints = new PointCollection() { 
+                new Point(0, 100),
+                new Point (100, 100),
+                new Point(50, 0)
+            };
+            root.Points = myPoints;
+            */
+            // Scaling up portion of animation
+            root.Fill = new SolidColorBrush(Colors.Gold);
+            for (int i = 1; i < 10; i++)
+            {
+                await Task.Delay(10);
+                HelperFuncts.ScalePolygon(ref root, 1.03);
+            }
+            for (int i = 1; i < 10; i++)
+            {
+                await Task.Delay(10);
+                HelperFuncts.ScalePolygon(ref root, 0.97);
+            }
+            root.Fill = new SolidColorBrush(Colors.CornflowerBlue);
+        }
+
         protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
-            root.Fill = new SolidColorBrush(Colors.Red);
             CustomEvents.InvokeTriangleClicked(this);
+            ClickAnimation();
         }
     }
 }

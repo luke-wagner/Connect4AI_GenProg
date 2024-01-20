@@ -6,8 +6,13 @@
              xmlns:local="clr-namespace:C4_WPFApp"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Name="root">
+        <Canvas>
+            <Grid Name="token">
+                <Ellipse Name="Ellipse1" Width="40" Height="40"></Ellipse>
+                <Ellipse Name="Ellipse2" Width="30" Height="30"></Ellipse>
+            </Grid>
+        </Canvas>
         <Rectangle Stroke="Black" Width="50" Height="50"></Rectangle>
-        <Ellipse Name="Ellipse" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
-    </Grid>
+        </Grid>
 </UserControl>

@@ -1,10 +1,12 @@
-class C4AITrainer : C4SmartAI {
+public class C4AITrainer : C4SmartAI {
     public const int TUNE_MAX = 1000;
     public const int TUNE_MIN = -1000;
     public bool playingAsPlayer { get; private set;}
 
     public bool won { get => this.checkForWin(myNumber); }
     public bool boardFull { get => this.checkFull(); }
+    public (int x, int y) LastMove { get => lastMove; }
+    public (int x, int y) LastMoveCoords { get => getGridCoordinates(lastMove.x, lastMove.y); }
 
     public SortedDictionary<int, int> TuningValues { get => this.tuningValues; }
 
@@ -75,6 +77,11 @@ class C4AITrainer : C4SmartAI {
     }
 
     public void OpponentMove(int move){
+        // validate move
+        if (colIsFull(move))
+        {
+            return;
+        }
         playToCol(move, !playingAsPlayer);
     }
 }
